@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { ClipboardList, Inbox, Menu, X } from "lucide-react";
+import { ClipboardList, History, Inbox, Menu, X } from "lucide-react";
 
 import { BrandMark } from "@/components/app/brand-mark";
 import { LogoutButton } from "@/components/app/logout-button";
@@ -18,6 +18,7 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
   const [open, setOpen] = useState(false);
   const viewAll = searchParams.get("view") === "all";
   const onAdminHome = pathname === "/admin";
+  const onHistory = pathname === "/admin/history";
 
   const items = [
     {
@@ -25,20 +26,30 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
       label: "未確認申請",
       icon: Inbox,
       active: onAdminHome && !viewAll,
+      needsRefresh: true,
     },
     {
       href: "/admin?view=all",
       label: "全申請",
       icon: ClipboardList,
       active: onAdminHome && viewAll,
+      needsRefresh: true,
+    },
+    {
+      href: "/admin/history",
+      label: "経費申請履歴",
+      icon: History,
+      active: onHistory,
+      needsRefresh: false,
     },
   ];
 
-  const navigateAdmin = (href: string) => {
+  const navigateAdmin = (href: string, needsRefresh: boolean) => {
     setOpen(false);
     router.push(href);
-    // Query-only changes on /admin need an explicit refresh under Cache Components.
-    router.refresh();
+    if (needsRefresh) {
+      router.refresh();
+    }
   };
 
   return (
@@ -66,7 +77,9 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
               <SideLink
                 key={item.href}
                 {...item}
-                onNavigate={() => navigateAdmin(item.href)}
+                onNavigate={() =>
+                  navigateAdmin(item.href, item.needsRefresh)
+                }
               />
             ))}
           </nav>
@@ -93,7 +106,7 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
             <SideLink
               key={item.href}
               {...item}
-              onNavigate={() => navigateAdmin(item.href)}
+              onNavigate={() => navigateAdmin(item.href, item.needsRefresh)}
             />
           ))}
         </nav>
