@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/app/brand-mark";
+import { NotificationSettings } from "@/components/pwa/notification-settings";
 import { Button } from "@/components/ui/button";
 import { roleLabel } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
@@ -47,7 +48,7 @@ export function ApplicantHeader({ profile }: { profile: Profile }) {
                 href={link.href}
                 className={cn(
                   "relative rounded-md px-3 py-1.5 text-[13px] text-ink-secondary transition-colors duration-ui hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          active &&
+                  active &&
                     "font-semibold text-ink after:absolute after:inset-x-3 after:-bottom-[13px] after:h-[2px] after:bg-primary",
                 )}
               >
@@ -58,7 +59,8 @@ export function ApplicantHeader({ profile }: { profile: Profile }) {
         </nav>
 
         <div className="flex items-center gap-1">
-          <div className="hidden items-center gap-2 border-l border-line pl-3 lg:flex">
+          <div className="hidden items-center gap-3 border-l border-line pl-3 md:flex">
+            <NotificationSettings className="max-w-[220px]" />
             <div className="text-right">
               <p className="text-[13px] font-medium leading-tight text-ink">
                 {profile.display_name}
@@ -99,6 +101,9 @@ export function ApplicantHeader({ profile }: { profile: Profile }) {
               </Link>
             ))}
           </nav>
+          <div className="mt-3 border-t border-line pt-3">
+            <NotificationSettings />
+          </div>
           <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
             <div>
               <p className="text-sm font-medium text-ink">

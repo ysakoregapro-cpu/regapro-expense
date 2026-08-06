@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireAdmin, requireApplicant } from "@/lib/auth/session";
+import { notifyExpenseEvent } from "@/lib/notifications/send";
 import {
   createReceiptSignedUrl,
   deleteReceiptAdmin,
@@ -86,6 +87,14 @@ export async function createExpenseApplication(
     return { ok: false, error: mapDbError(error?.message) };
   }
 
+  try {
+    await notifyExpenseEvent("submitted", data.id);
+  } catch (err) {
+    console.error("Post-submit notification failed", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+  }
+
   revalidatePath("/app");
   redirect(`/app/applications/${data.id}`);
 }
@@ -166,6 +175,14 @@ export async function resubmitExpenseApplication(
     return { ok: false, error: mapDbError(error.message) };
   }
 
+  try {
+    await notifyExpenseEvent("resubmitted", applicationId);
+  } catch (err) {
+    console.error("Post-resubmit notification failed", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+  }
+
   revalidatePath("/app");
   revalidatePath(`/app/applications/${applicationId}`);
   redirect(`/app/applications/${applicationId}`);
@@ -194,6 +211,14 @@ export async function approveExpenseApplicationAction(
     return { ok: false, error: mapDbError(error.message) };
   }
 
+  try {
+    await notifyExpenseEvent("approved", applicationId);
+  } catch (err) {
+    console.error("Post-approve notification failed", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+  }
+
   revalidatePath("/admin");
   revalidatePath(`/admin/applications/${applicationId}`);
   return { ok: true };
@@ -220,6 +245,14 @@ export async function returnExpenseApplicationAction(
 
   if (error) {
     return { ok: false, error: mapDbError(error.message) };
+  }
+
+  try {
+    await notifyExpenseEvent("returned", applicationId);
+  } catch (err) {
+    console.error("Post-return notification failed", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
   }
 
   revalidatePath("/admin");

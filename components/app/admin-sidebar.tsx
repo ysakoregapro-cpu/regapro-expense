@@ -7,6 +7,7 @@ import { ClipboardList, Inbox, Menu, X } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/app/brand-mark";
+import { NotificationSettings } from "@/components/pwa/notification-settings";
 import { Button } from "@/components/ui/button";
 import { roleLabel } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
@@ -127,18 +128,21 @@ function UserBlock({
   className?: string;
 }) {
   return (
-    <div className={cn("flex items-start justify-between gap-2", className)}>
-      <div className="min-w-0">
-        <p className="truncate text-[13px] font-medium text-ink">
-          {profile.display_name}
-        </p>
-        <p className="text-[11px] text-ink-muted">{roleLabel(profile.role)}</p>
+    <div className={cn("space-y-3", className)}>
+      <NotificationSettings />
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-[13px] font-medium text-ink">
+            {profile.display_name}
+          </p>
+          <p className="text-[11px] text-ink-muted">{roleLabel(profile.role)}</p>
+        </div>
+        <form action={logoutAction}>
+          <Button type="submit" variant="ghost" size="sm" className="shrink-0">
+            ログアウト
+          </Button>
+        </form>
       </div>
-      <form action={logoutAction}>
-        <Button type="submit" variant="ghost" size="sm" className="shrink-0">
-          ログアウト
-        </Button>
-      </form>
     </div>
   );
 }

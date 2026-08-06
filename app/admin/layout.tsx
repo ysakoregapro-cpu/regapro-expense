@@ -4,6 +4,7 @@ import { AdminHeader } from "@/components/app/admin-header";
 import { AdminSidebar } from "@/components/app/admin-sidebar";
 import { AppShell } from "@/components/app/app-shell";
 import { LoadingState } from "@/components/app/loading-state";
+import { AuthenticatedPwaChrome } from "@/components/pwa/authenticated-pwa-chrome";
 import { requireAdmin } from "@/lib/auth/session";
 
 async function AdminFrame({ children }: { children: React.ReactNode }) {
@@ -11,6 +12,7 @@ async function AdminFrame({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShell>
+      <AuthenticatedPwaChrome />
       <div className="flex min-h-svh flex-col lg:flex-row">
         <Suspense fallback={<LoadingState className="p-4" />}>
           <AdminSidebar profile={profile} />
