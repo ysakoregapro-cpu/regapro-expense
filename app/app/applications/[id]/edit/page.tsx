@@ -37,7 +37,7 @@ async function EditContent({ id }: { id: string }) {
     .order("sort_order", { ascending: true });
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <PageHeader title="修正して再申請" />
       {application.admin_note ? (
         <InlineAlert title="管理者からの差し戻しコメント">
@@ -48,7 +48,7 @@ async function EditContent({ id }: { id: string }) {
           内容を修正して再申請してください。
         </InlineAlert>
       )}
-      <div className="rounded-lg border border-line bg-surface px-4 py-5 sm:px-5">
+      <div className="mx-auto w-full max-w-[800px] border-y border-line bg-surface px-4 py-5 sm:rounded-lg sm:border sm:px-5">
         <ExpenseForm
           mode="resubmit"
           application={application as ExpenseApplication}

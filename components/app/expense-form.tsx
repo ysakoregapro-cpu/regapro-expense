@@ -49,7 +49,7 @@ export function ExpenseForm({ categories, mode, application }: Props) {
   }, [state, router]);
 
   return (
-    <form action={formAction} className="mx-auto flex w-full max-w-[800px] flex-col gap-5">
+    <form action={formAction} className="flex w-full flex-col gap-4">
       <Field label="申請区分" htmlFor="applicationType" required>
         <select
           id="applicationType"
@@ -84,7 +84,7 @@ export function ExpenseForm({ categories, mode, application }: Props) {
         </select>
       </Field>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="金額（円）" htmlFor="amount" required>
           <Input
             id="amount"

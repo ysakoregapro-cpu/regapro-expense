@@ -91,7 +91,7 @@ async function AdminHomeContent({
     .reduce((sum, a) => sum + a.amount, 0);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <PageHeader title={viewAll ? "全申請" : "未確認申請"} />
 
       <InlineSummary
@@ -104,11 +104,13 @@ async function AdminHomeContent({
       />
 
       {sorted.length === 0 ? (
-        <EmptyState
-          title={
-            viewAll ? "申請はまだありません" : "未確認の申請はありません"
-          }
-        />
+        <div className="border-y border-line bg-surface">
+          <EmptyState
+            title={
+              viewAll ? "申請はまだありません" : "未確認の申請はありません"
+            }
+          />
+        </div>
       ) : (
         <ExpenseDataTable applications={sorted} />
       )}

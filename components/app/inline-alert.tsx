@@ -13,7 +13,7 @@ export function InlineAlert({
 }) {
   const toneClass =
     tone === "returned"
-      ? "border-l-[3px] border-l-status-returned-fg bg-status-returned/60"
+      ? "border-l-[3px] border-l-status-returned-fg bg-status-returned/40"
       : tone === "error"
         ? "border-l-[3px] border-l-destructive bg-destructive-soft"
         : "border-l-[3px] border-l-primary bg-surface-subtle";
@@ -21,14 +21,16 @@ export function InlineAlert({
   return (
     <div
       className={cn(
-        "rounded-lg border border-line px-4 py-3 text-sm text-ink",
+        "rounded-md border border-line px-3 py-2.5 text-sm text-ink",
         toneClass,
         className,
       )}
       role="status"
     >
-      {title ? <p className="mb-1 font-medium">{title}</p> : null}
-      <div className="text-ink-secondary whitespace-pre-wrap">{children}</div>
+      {title ? <p className="mb-0.5 text-[13px] font-medium">{title}</p> : null}
+      <div className="break-words text-[13px] leading-relaxed text-ink-secondary whitespace-pre-wrap">
+        {children}
+      </div>
     </div>
   );
 }

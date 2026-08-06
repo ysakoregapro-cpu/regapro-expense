@@ -18,18 +18,18 @@ async function DetailContent({ id }: { id: string }) {
   const { application, events, receiptUrl } = detail;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageHeader
         title="申請詳細"
         actions={
           application.status === "returned" ? (
-            <Button asChild>
+            <Button asChild className="h-11 w-full sm:h-10 sm:w-auto">
               <Link href={`/app/applications/${application.id}/edit`}>
                 修正して再申請
               </Link>
             </Button>
           ) : (
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" className="h-11 sm:h-10">
               <Link href="/app">一覧へ</Link>
             </Button>
           )
@@ -42,19 +42,19 @@ async function DetailContent({ id }: { id: string }) {
         </InlineAlert>
       ) : null}
 
-      <section className="rounded-lg border border-line bg-surface px-4 py-4">
+      <section className="border-y border-line bg-surface px-4 py-4 sm:rounded-lg sm:border">
         <ApplicationMeta application={application} showApplicant={false} />
       </section>
 
-      <section className="rounded-lg border border-line bg-surface px-4 py-4">
+      <section className="border-y border-line bg-surface px-4 py-4 sm:rounded-lg sm:border">
         <h2 className="text-base font-semibold text-ink">内容・目的</h2>
-        <p className="mt-2 whitespace-pre-wrap text-sm text-ink">
+        <p className="mt-2 break-words whitespace-pre-wrap text-sm leading-relaxed text-ink">
           {application.description}
         </p>
         {application.after_reason ? (
           <>
             <h3 className="mt-4 text-sm font-semibold text-ink">事後理由</h3>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-ink-secondary">
+            <p className="mt-1 break-words whitespace-pre-wrap text-sm leading-relaxed text-ink-secondary">
               {application.after_reason}
             </p>
           </>
@@ -62,7 +62,7 @@ async function DetailContent({ id }: { id: string }) {
         {application.admin_note && application.status !== "returned" ? (
           <>
             <h3 className="mt-4 text-sm font-semibold text-ink">管理者備考</h3>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-ink-secondary">
+            <p className="mt-1 break-words whitespace-pre-wrap text-sm leading-relaxed text-ink-secondary">
               {application.admin_note}
             </p>
           </>
@@ -71,7 +71,7 @@ async function DetailContent({ id }: { id: string }) {
 
       <ReceiptPreview path={application.receipt_path} url={receiptUrl} />
 
-      <section className="rounded-lg border border-line bg-surface px-4 py-4">
+      <section className="border-y border-line bg-surface px-4 py-4 sm:rounded-lg sm:border">
         <h2 className="mb-3 text-base font-semibold text-ink">操作履歴</h2>
         <EventTimeline events={events} />
       </section>

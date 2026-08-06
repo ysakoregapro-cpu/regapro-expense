@@ -21,9 +21,9 @@ async function NewExpenseContent() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageHeader title="新規申請" />
-      <div className="rounded-lg border border-line bg-surface px-4 py-5 sm:px-5">
+      <div className="mx-auto w-full max-w-[800px] border-y border-line bg-surface px-4 py-5 sm:rounded-lg sm:border sm:px-5">
         <ExpenseForm
           mode="create"
           categories={(data ?? []) as ExpenseCategory[]}

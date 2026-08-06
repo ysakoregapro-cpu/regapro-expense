@@ -71,13 +71,19 @@ export function ConfirmDialog({
           ) : null}
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Dialog.Close asChild>
-              <Button type="button" variant="ghost" disabled={pending}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-11 sm:h-10"
+                disabled={pending}
+              >
                 キャンセル
               </Button>
             </Dialog.Close>
             <Button
               type="button"
               variant={confirmVariant}
+              className="h-11 sm:h-10"
               disabled={pending}
               onClick={() => {
                 startTransition(async () => {

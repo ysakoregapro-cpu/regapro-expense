@@ -25,7 +25,12 @@ export function AdminReviewActions({
   if (!canReview) {
     return (
       <StickyActionBar>
-        <Button type="button" variant="ghost" onClick={() => router.push("/admin")}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-11 w-full sm:h-10 sm:w-auto"
+          onClick={() => router.push("/admin")}
+        >
           戻る
         </Button>
       </StickyActionBar>
@@ -34,7 +39,12 @@ export function AdminReviewActions({
 
   return (
     <StickyActionBar>
-      <Button type="button" variant="ghost" onClick={() => router.push("/admin")}>
+      <Button
+        type="button"
+        variant="ghost"
+        className="h-11 w-full sm:h-10 sm:w-auto"
+        onClick={() => router.push("/admin")}
+      >
         戻る
       </Button>
 
@@ -44,7 +54,11 @@ export function AdminReviewActions({
         confirmLabel="差し戻す"
         confirmVariant="warning"
         trigger={
-          <Button type="button" variant="warning">
+          <Button
+            type="button"
+            variant="warning"
+            className="h-11 w-full sm:h-10 sm:w-auto"
+          >
             差し戻し
           </Button>
         }
@@ -80,7 +94,11 @@ export function AdminReviewActions({
         description="承認後は申請者へ承認済みとして表示されます。"
         confirmLabel="承認する"
         confirmVariant="default"
-        trigger={<Button type="button">承認</Button>}
+        trigger={
+          <Button type="button" className="h-11 w-full sm:h-10 sm:w-auto">
+            承認
+          </Button>
+        }
         extra={
           <div className="flex flex-col gap-1.5">
             <label

@@ -45,7 +45,7 @@ async function ApplicantHomeContent() {
   const approved = applications.filter((a) => a.status === "approved").length;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <PageHeader
         title="経費申請"
         actions={
@@ -71,8 +71,8 @@ async function ApplicantHomeContent() {
         </InlineAlert>
       ) : null}
 
-      <section className="rounded-lg border border-line bg-surface px-3">
-        <div className="hidden border-b border-line px-1 py-2 text-xs font-medium text-ink-secondary md:grid md:grid-cols-[88px_48px_minmax(0,1.2fr)_110px_110px_140px_140px] md:gap-3">
+      <section className="border-y border-line bg-surface">
+        <div className="hidden border-b border-line px-3 py-2 text-xs font-medium text-ink-secondary lg:grid lg:grid-cols-[84px_40px_minmax(0,1.4fr)_minmax(96px,120px)_100px_132px_128px] lg:gap-3">
           <span>ステータス</span>
           <span>区分</span>
           <span>経費項目</span>
@@ -82,18 +82,18 @@ async function ApplicantHomeContent() {
           <span>更新日時</span>
         </div>
         {sorted.length === 0 ? (
-          <div className="py-4">
-            <EmptyState
-              title="申請はまだありません"
-              description="経費が発生したら新規申請から登録してください。"
-              actionHref="/app/new"
-              actionLabel="新規申請"
-            />
-          </div>
+          <EmptyState
+            title="申請はまだありません"
+            description="経費が発生したら新規申請から登録してください。"
+            actionHref="/app/new"
+            actionLabel="新規申請"
+          />
         ) : (
-          sorted.map((app) => (
-            <ExpenseListRow key={app.id} application={app} />
-          ))
+          <div className="px-2 lg:px-3">
+            {sorted.map((app) => (
+              <ExpenseListRow key={app.id} application={app} />
+            ))}
+          </div>
         )}
       </section>
     </div>

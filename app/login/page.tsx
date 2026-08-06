@@ -17,11 +17,11 @@ async function LoginContent() {
 
   return (
     <div className="w-full max-w-[420px]">
-      <div className="mb-6 text-center">
-        <h1 className="text-xl font-semibold text-ink">レガプロ経費申請</h1>
+      <div className="mb-5 text-center">
+        <p className="text-lg font-semibold text-ink">レガプロ経費申請</p>
         <p className="mt-1 text-sm text-ink-secondary">ログイン</p>
       </div>
-      <div className="rounded-lg border border-line bg-surface px-5 py-6">
+      <div className="border border-line bg-surface px-5 py-5 sm:rounded-lg">
         <LoginForm />
       </div>
     </div>
@@ -30,7 +30,7 @@ async function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <AppShell className="flex min-h-svh items-center justify-center px-4 py-10">
+    <AppShell className="flex min-h-svh items-center justify-center px-4 py-8">
       <Suspense fallback={<LoadingState />}>
         <LoginContent />
       </Suspense>

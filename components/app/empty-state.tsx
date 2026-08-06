@@ -17,18 +17,13 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-lg border border-dashed border-line bg-surface px-4 py-10 text-center",
-        className,
-      )}
-    >
+    <div className={cn("px-1 py-6 text-center", className)}>
       <p className="text-sm font-medium text-ink">{title}</p>
       {description ? (
         <p className="mt-1 text-sm text-ink-secondary">{description}</p>
       ) : null}
       {actionHref && actionLabel ? (
-        <Button asChild className="mt-4" size="default">
+        <Button asChild className="mt-4 h-11 sm:h-10" size="default">
           <Link href={actionHref}>{actionLabel}</Link>
         </Button>
       ) : null}

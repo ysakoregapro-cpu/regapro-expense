@@ -13,23 +13,23 @@ export function InlineSummary({
   className?: string;
 }) {
   return (
-    <p
+    <div
       className={cn(
-        "text-sm text-ink-secondary [font-variant-numeric:tabular-nums]",
+        "flex flex-wrap items-baseline gap-x-0 gap-y-1 text-sm [font-variant-numeric:tabular-nums]",
         className,
       )}
     >
       {items.map((item, index) => (
-        <span key={item.label}>
+        <span key={item.label} className="inline-flex items-baseline">
           {index > 0 ? (
             <span className="mx-2 text-ink-muted" aria-hidden>
               ｜
             </span>
           ) : null}
-          <span className="text-ink-muted">{item.label}</span>{" "}
-          <span className="font-medium text-ink">{item.value}</span>
+          <span className="text-ink-muted">{item.label}</span>
+          <span className="ml-1 font-medium text-ink">{item.value}</span>
         </span>
       ))}
-    </p>
+    </div>
   );
 }

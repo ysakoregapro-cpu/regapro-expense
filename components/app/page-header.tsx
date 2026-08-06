@@ -14,12 +14,12 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between",
+        "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
         className,
       )}
     >
       <div className="min-w-0">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink md:text-[26px]">
+        <h1 className="text-[22px] font-semibold leading-tight tracking-tight text-ink sm:text-2xl">
           {title}
         </h1>
         {description ? (
@@ -27,7 +27,9 @@ export function PageHeader({
         ) : null}
       </div>
       {actions ? (
-        <div className="flex shrink-0 items-center gap-2">{actions}</div>
+        <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
+          {actions}
+        </div>
       ) : null}
     </div>
   );

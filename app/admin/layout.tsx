@@ -17,7 +17,7 @@ async function AdminFrame({ children }: { children: React.ReactNode }) {
         </Suspense>
         <div className="flex min-w-0 flex-1 flex-col">
           <AdminHeader profile={profile} />
-          <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-6">
+          <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-5 lg:px-5">
             {children}
           </main>
         </div>

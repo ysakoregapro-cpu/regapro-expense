@@ -14,7 +14,7 @@ export function ReceiptPreview({
     return (
       <div
         className={cn(
-          "rounded-lg border border-line bg-surface-subtle px-4 py-8 text-center text-sm text-ink-secondary",
+          "border-y border-line bg-surface-subtle px-4 py-6 text-center text-sm text-ink-secondary sm:rounded-lg sm:border",
           className,
         )}
       >
@@ -27,7 +27,7 @@ export function ReceiptPreview({
     return (
       <div
         className={cn(
-          "rounded-lg border border-line bg-surface-subtle px-4 py-8 text-center text-sm text-ink-secondary",
+          "border-y border-line bg-surface-subtle px-4 py-6 text-center text-sm text-ink-secondary sm:rounded-lg sm:border",
           className,
         )}
       >
@@ -39,7 +39,12 @@ export function ReceiptPreview({
   const pdf = isPdfPath(path);
 
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-line bg-surface", className)}>
+    <div
+      className={cn(
+        "overflow-hidden border-y border-line bg-surface sm:rounded-lg sm:border",
+        className,
+      )}
+    >
       <div className="border-b border-line bg-surface-subtle px-3 py-2 text-xs font-medium text-ink-secondary">
         領収書
       </div>
@@ -48,14 +53,14 @@ export function ReceiptPreview({
           <iframe
             title="領収書PDF"
             src={url}
-            className="h-[480px] w-full bg-white"
+            className="h-[420px] w-full bg-white xl:h-[520px]"
           />
           <div className="border-t border-line px-3 py-2 text-xs">
             <a
               href={url}
               target="_blank"
               rel="noreferrer"
-              className="text-primary underline-offset-2 hover:underline"
+              className="text-primary underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               別タブで開く
             </a>
@@ -66,7 +71,7 @@ export function ReceiptPreview({
         <img
           src={url}
           alt="領収書"
-          className="max-h-[560px] w-full object-contain bg-surface-subtle"
+          className="max-h-[480px] w-full bg-surface-subtle object-contain xl:max-h-[560px]"
         />
       )}
     </div>

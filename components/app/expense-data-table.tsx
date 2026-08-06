@@ -19,19 +19,22 @@ export function ExpenseDataTable({
   className?: string;
 }) {
   return (
-    <div className={cn("w-full", className)}>
-      <div className="hidden overflow-hidden rounded-lg border border-line bg-surface lg:block">
-        <table className="w-full border-collapse text-sm">
+    <div className={cn("w-full min-w-0", className)}>
+      {/* PC table — never force horizontal scroll on smaller viewports */}
+      <div className="hidden overflow-hidden rounded-lg border border-line bg-surface xl:block">
+        <table className="w-full table-fixed border-collapse text-[13px]">
           <thead className="bg-surface-subtle text-left text-xs font-medium text-ink-secondary">
             <tr className="border-b border-line">
-              <th className="px-3 py-3 font-medium">新規／再申請</th>
-              <th className="px-3 py-3 font-medium">申請者</th>
-              <th className="px-3 py-3 font-medium">事前／事後</th>
-              <th className="px-3 py-3 font-medium">経費項目</th>
-              <th className="px-3 py-3 font-medium">日付</th>
-              <th className="px-3 py-3 font-medium text-right">金額</th>
-              <th className="px-3 py-3 font-medium">ステータス</th>
-              <th className="px-3 py-3 font-medium">受付日時</th>
+              <th className="w-[88px] px-3 py-2.5 font-medium">新規／再申請</th>
+              <th className="w-[18%] px-3 py-2.5 font-medium">申請者</th>
+              <th className="w-[64px] px-3 py-2.5 font-medium">区分</th>
+              <th className="px-3 py-2.5 font-medium">経費項目</th>
+              <th className="w-[108px] px-3 py-2.5 font-medium">日付</th>
+              <th className="w-[120px] px-3 py-2.5 font-medium text-right">
+                金額
+              </th>
+              <th className="w-[96px] px-3 py-2.5 font-medium">ステータス</th>
+              <th className="w-[148px] px-3 py-2.5 font-medium">受付日時</th>
             </tr>
           </thead>
           <tbody>
@@ -40,69 +43,63 @@ export function ExpenseDataTable({
                 key={app.id}
                 className="border-b border-line last:border-b-0 hover:bg-surface-subtle"
               >
-                <td className="p-0">
-                  <Link
-                    href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
-                  >
+                <td className="p-0 align-middle">
+                  <RowLink href={`/admin/applications/${app.id}`}>
                     {versionKindLabel(app.version)}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 font-medium text-ink"
+                    className="truncate font-medium"
                   >
                     {app.applicant_name_snapshot}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 text-ink-secondary"
+                    className="text-ink-secondary"
                   >
                     {applicationTypeLabel(app.application_type)}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 text-ink"
+                    className="truncate"
                   >
                     {app.category_name_snapshot}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 text-ink-secondary"
+                    className="whitespace-nowrap text-ink-secondary"
                   >
                     {formatExpenseDate(app.expense_date)}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="amount-cell block px-3 py-3 font-medium text-ink"
+                    className="amount-cell whitespace-nowrap font-medium"
                   >
                     {formatYen(app.amount)}
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
-                    href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3"
-                  >
+                <td className="p-0 align-middle">
+                  <RowLink href={`/admin/applications/${app.id}`}>
                     <StatusBadge status={app.status} />
-                  </Link>
+                  </RowLink>
                 </td>
-                <td className="p-0">
-                  <Link
+                <td className="p-0 align-middle">
+                  <RowLink
                     href={`/admin/applications/${app.id}`}
-                    className="block px-3 py-3 text-xs text-ink-muted"
+                    className="whitespace-nowrap text-xs text-ink-muted"
                   >
                     {formatDateTime(app.submitted_at)}
-                  </Link>
+                  </RowLink>
                 </td>
               </tr>
             ))}
@@ -110,12 +107,13 @@ export function ExpenseDataTable({
         </table>
       </div>
 
-      <div className="divide-y divide-line rounded-lg border border-line bg-surface lg:hidden">
+      {/* Phone + tablet dense rows */}
+      <div className="divide-y divide-line border-y border-line bg-surface xl:hidden">
         {applications.map((app) => (
           <Link
             key={app.id}
             href={`/admin/applications/${app.id}`}
-            className="block px-3 py-3 hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="block px-1 py-2.5 hover:bg-surface-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
@@ -126,14 +124,14 @@ export function ExpenseDataTable({
                     {applicationTypeLabel(app.application_type)}
                   </span>
                 </div>
-                <p className="mt-1 text-sm font-medium text-ink">
+                <p className="mt-1 truncate text-sm font-medium text-ink">
                   {app.applicant_name_snapshot}
                 </p>
                 <p className="truncate text-sm text-ink-secondary">
                   {app.category_name_snapshot}
                 </p>
               </div>
-              <p className="amount-cell shrink-0 text-sm font-medium">
+              <p className="amount-cell shrink-0 whitespace-nowrap text-sm font-medium">
                 {formatYen(app.amount)}
               </p>
             </div>
@@ -145,5 +143,27 @@ export function ExpenseDataTable({
         ))}
       </div>
     </div>
+  );
+}
+
+function RowLink({
+  href,
+  children,
+  className,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "block px-3 py-3 text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+        className,
+      )}
+    >
+      {children}
+    </Link>
   );
 }

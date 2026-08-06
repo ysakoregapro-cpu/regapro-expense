@@ -15,9 +15,9 @@ export function ApplicationMeta({
   showApplicant?: boolean;
 }) {
   return (
-    <dl className="grid gap-3 text-sm sm:grid-cols-2">
+    <dl className="grid gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
       <MetaItem label="申請番号">
-        <span className="app-no">{application.application_no}</span>
+        <span className="app-no break-all">{application.application_no}</span>
       </MetaItem>
       <MetaItem label="ステータス">
         <StatusBadge status={application.status} />
@@ -26,11 +26,15 @@ export function ApplicationMeta({
         {applicationTypeLabel(application.application_type)}申請
       </MetaItem>
       {showApplicant ? (
-        <MetaItem label="申請者">{application.applicant_name_snapshot}</MetaItem>
+        <MetaItem label="申請者">
+          <span className="break-words">{application.applicant_name_snapshot}</span>
+        </MetaItem>
       ) : null}
-      <MetaItem label="経費項目">{application.category_name_snapshot}</MetaItem>
+      <MetaItem label="経費項目">
+        <span className="break-words">{application.category_name_snapshot}</span>
+      </MetaItem>
       <MetaItem label="金額">
-        <span className="amount-cell inline-block font-medium">
+        <span className="amount-cell inline-block whitespace-nowrap font-medium">
           {formatYen(application.amount)}
         </span>
       </MetaItem>
@@ -56,7 +60,7 @@ function MetaItem({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <dt className="text-xs text-ink-muted">{label}</dt>
       <dd className="mt-0.5 text-ink">{children}</dd>
     </div>
