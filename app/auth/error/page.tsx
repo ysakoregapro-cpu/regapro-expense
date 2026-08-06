@@ -1,51 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Suspense } from "react";
+import { AppShell } from "@/components/app/app-shell";
 
-async function ErrorContent({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
-  const params = await searchParams;
-
+export default function AuthErrorPage() {
   return (
-    <>
-      {params?.error ? (
-        <p className="text-sm text-muted-foreground">
-          Code error: {params.error}
+    <AppShell className="flex min-h-svh items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-lg border border-line bg-surface px-5 py-6 text-center">
+        <h1 className="text-lg font-semibold text-ink">認証エラー</h1>
+        <p className="mt-2 text-sm text-ink-secondary">
+          認証処理に失敗しました。ログイン画面から再度お試しください。
         </p>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          An unspecified error occurred.
-        </p>
-      )}
-    </>
-  );
-}
-
-export default function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>;
-}) {
-  return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Sorry, something went wrong.
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <ErrorContent searchParams={searchParams} />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </div>
+        <a
+          href="/login"
+          className="mt-4 inline-block text-sm font-medium text-primary underline-offset-2 hover:underline"
+        >
+          ログインへ戻る
+        </a>
       </div>
-    </div>
+    </AppShell>
   );
 }

@@ -1,0 +1,169 @@
+---
+description: レガプロ経費申請アプリのUI/UX永続ルール。実装・改修時は必ず docs/ui-spec.md を参照すること。
+alwaysApply: true
+---
+
+# レガプロ経費申請 UI ルール
+
+株式会社レガプロの社内経費申請Webアプリ向け。  
+「おしゃれなSaaS風」などの曖昧解釈は禁止。UI変更・新規画面追加時は必ず [`docs/ui-spec.md`](../../docs/ui-spec.md) を参照し、[`docs/implementation-plan.md`](../../docs/implementation-plan.md) の既存スキーマ前提に従う。
+
+バックエンドの ENUM / TABLE / RPC / RLS / Storage は既に作成済みである。**勝手にスキーマ変更・マイグレーション追加をしない。** 不足は「要確認事項」として扱う。
+
+---
+
+## 絶対禁止（AI生成UIの典型）
+
+- 大きなKPIカードを3〜4枚並べるダッシュボード
+- 影付き白いカードの等間隔羅列、情報の全カード囲い
+- `rounded-2xl` / `rounded-3xl`、角丸12px超
+- `shadow-md` / `shadow-lg` の常用（通常パネル・Header・table・formは影なし）
+- グラデーション、ガラスモーフィズム、背景ブロブ
+- 紫・シアン・ネオン系を中心にした配色
+- 巨大アイコンKPI、ヒーローコピー、「おかえりなさい」系の装飾文
+- `text-4xl` 以上のページタイトル
+- 情報密度の低いスクロール稼ぎレイアウト
+- PC一覧のカード縦並び
+- モバイルでPCテーブルをそのまま横スクロール
+- 全ボタン同色・同強度
+- 全画面共通 `max-w-5xl`
+- 金額全体への `font-mono`（申請番号のみ等幅可）
+- 無目的な汎用 `Card` コンポーネント量産
+
+---
+
+## デザインコンセプト
+
+落ち着いた日本企業向け業務SaaS。処理速度・信頼感・判断しやすさ優先。  
+階層は色の乱発ではなく、余白・整列・文字ウェイトで作る。
+
+---
+
+## 色（CSS変数必須）
+
+hex をコンポーネント各所へ直書きしない。CSS変数経由。
+
+- App background `#F6F7F9`
+- Surface `#FFFFFF`
+- Subtle surface `#FAFBFC`
+- Primary text `#17202A`
+- Secondary text `#667085`
+- Muted text `#98A2B3`
+- Border `#E4E7EC` / Border strong `#D0D5DD`
+- Primary navy `#244566` / hover `#1C3855` / focus `#4B7398`
+- Approved `#256044` on `#EAF5EF`
+- Pending `#805600` on `#FFF7DF`
+- Returned `#9A3412` on `#FFF0E7`
+- Destructive `#B42318` on `#FEECEB`（削除・重大エラー用。差し戻し画面全体を赤くしない）
+
+---
+
+## 寸法トークン
+
+- Input/button 角丸 6px、一般パネル 8px、Dialog/popover 10px
+- 余白は 4px 単位（4/8/12/16/20/24/32/40/48）。理由のない `p-8`/`py-12`/`gap-8` 連発禁止
+- PC button 40px、Mobile primary 44px+、Input 42–44px、Table row 48–56px、Header ~56px
+- 管理サイドバー幅 208–224px
+
+---
+
+## タイポグラフィ
+
+日本語向け system stack（Geist Sans, Inter, Noto Sans JP, Yu Gothic UI, Hiragino, sans-serif）。
+
+- 画面タイトル 24–28px、セクション 16–18px、本文 14px、補助 12–13px、テーブル 13–14px
+- 金額: 右揃え + `tabular-nums` + 3桁カンマ + 「円」
+
+---
+
+## 役割別レイアウト（必須）
+
+申請者（`applicant`）と管理者（`admin` / `system_admin`）でダッシュボード構造を使い回さない。
+
+### 画面最大幅
+
+- ログインフォーム: 400–440px
+- 申請者: 960–1080px
+- 申請フォーム: 720–800px
+- 管理者本文: ~1280px または利用可能幅（`max-w-5xl` に押し込まない）
+
+### 申請者
+
+- 上部: タイトル + 右「新規申請」+ 1行 InlineSummary（KPIカード禁止）
+- 差し戻し（`returned`）があるときだけサマリー直下に対応依頼
+- 一覧は divider のコンパクト行（カード羅列禁止）
+- PC 1行: ステータス / 経費項目 / 金額 / 日付 / 申請番号 / 更新日時
+- モバイル: 上段（ステータス・項目・金額）+ 下段（日付・申請番号）、行タップ可
+
+### 管理者
+
+- PC: 左サイドナビ 208–224px + 右メイン
+- サマリーはヘッダー付近のコンパクト数値（巨大KPIカード禁止）
+- **管理者一覧は PC で table**（行クリック。行内に複数操作ボタンを並べない）
+- 必須列: 新規/再申請（`version`） / 申請者 / 事前・事後 / 経費項目 / 日付 / 金額 / ステータス / 受付日時
+- **モバイルは密度の高い行表示**（table横スクロール禁止）
+
+### 管理者詳細
+
+- PC: 左 62–68%（申請情報・履歴）、右 32–38%（領収書プレビュー）
+- 領収書は別画面必須にしない。Signed URL はサーバー発行
+- **StickyActionBar**: 承認=Primary、差し戻し=Secondary/warning（赤塗り禁止）、戻る=Tertiary
+
+### 差し戻しUI
+
+- 小さい returned バッジ、左 3–4px の赤橙アクセント、`admin_note` を上部明示
+- 主要CTA「修正して再申請」
+- 画面全体を赤くしない
+
+### ログイン
+
+- ログインID + パスワードのみ
+- Sign up / Forgot password / Magic Link を出さない
+- 影なし、大きなヒーロー/イラスト不要
+
+---
+
+## 状態バッジ
+
+小さな `StatusBadge` のみ。巨大色面禁止。テキスト併記（色だけ禁止）。
+
+- pending / approved / returned は ui-spec の色トークンに従う
+
+---
+
+## データ操作（既存スキーマ厳守）
+
+- 新規申請: `expense_applications` INSERT。採番・snapshot・status・version は DBトリガーへ任せる
+- 承認: `approve_expense_application`
+- 差し戻し: `return_expense_application`（コメント必須）
+- 再申請: `resubmit_expense_application`
+- 履歴: `expense_events` / 版: `expense_application_versions`
+- 領収書: private bucket `expense-receipts`。失敗時はアップロード補償削除
+- 認可: RLS + Server 側で本人・ロール確認。`getSession()` 単独信用禁止。`getClaims()` または `getUser()` + `profiles`
+- `SUPABASE_SECRET_KEY` Admin Client は server-only
+- ロールは `profiles.role` を正。`user_metadata` を認可に使わない
+
+---
+
+## レスポンシブ監査サイズ
+
+必ず次で確認: **390×844** / **768×1024** / **1440×900**
+
+---
+
+## コンポーネント方針
+
+優先: AppShell, ApplicantHeader, AdminSidebar, AdminHeader, PageHeader, InlineSummary, StatusBadge, ExpenseListRow, ExpenseDataTable, Field, FieldError, InlineAlert, EmptyState, ReceiptPreview, StickyActionBar, ConfirmDialog, SubmitButton, LoadingState
+
+`Card` を作る場合は用途を説明できる場合に限る。
+
+---
+
+## 変更時チェック
+
+UIを触ったら:
+
+1. `docs/ui-spec.md` を開いて該当画面を確認したか
+2. 禁止UIリストに抵触していないか
+3. 役割別レイアウト・最大幅・table/行表示ルールを守っているか
+4. 金額・バッジ・差し戻し優先・sticky bar が仕様どおりか
