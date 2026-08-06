@@ -1,5 +1,7 @@
 import { Suspense } from "react";
+import { connection } from "next/server";
 
+import { AdminViewTabs } from "@/components/app/admin-view-tabs";
 import { EmptyState } from "@/components/app/empty-state";
 import { ExpenseDataTable } from "@/components/app/expense-data-table";
 import { LoadingState } from "@/components/app/loading-state";
@@ -8,8 +10,6 @@ import { PageHeader } from "@/components/app/page-header";
 import { requireAdmin } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { ExpenseApplication, ExpenseStatus } from "@/lib/types/database";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 const statusRank: Record<ExpenseStatus, number> = {
   pending: 0,
@@ -35,23 +35,38 @@ async function AdminHomeContent({
 }: {
   searchParams: Promise<{ view?: string }>;
 }) {
+  await connection();
   await requireAdmin();
   const { view } = await searchParams;
   const viewAll = view === "all";
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("expense_applications")
     .select("*")
     .order("submitted_at", { ascending: false });
+
+  if (!viewAll) {
+    query = query.eq("status", "pending");
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Admin list failed", { code: error.code });
   }
 
-  const all = (data ?? []) as ExpenseApplication[];
+  const list = (data ?? []) as ExpenseApplication[];
+
+  // Summary metrics need the full set (pending counts / month approved).
+  const { data: summaryData } = await supabase
+    .from("expense_applications")
+    .select("id, status, version, submitted_at, reviewed_at, amount");
+  const all = (summaryData ?? []) as Pick<
+    ExpenseApplication,
+    "id" | "status" | "version" | "submitted_at" | "reviewed_at" | "amount"
+  >[];
   const pendingList = all.filter((a) => a.status === "pending");
-  const list = viewAll ? all : pendingList;
 
   const sorted = [...list].sort((a, b) => {
     const rank = statusRank[a.status] - statusRank[b.status];
@@ -110,20 +125,11 @@ async function AdminHomeContent({
       />
 
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex items-center gap-1 border-b border-line">
-          <TabLink href="/admin" active={!viewAll}>
-            未確認
-            <span className="ml-1.5 tabular-nums text-ink-muted">
-              {pendingList.length}
-            </span>
-          </TabLink>
-          <TabLink href="/admin?view=all" active={viewAll}>
-            すべて
-            <span className="ml-1.5 tabular-nums text-ink-muted">
-              {all.length}
-            </span>
-          </TabLink>
-        </div>
+        <AdminViewTabs
+          viewAll={viewAll}
+          pendingCount={pendingList.length}
+          allCount={all.length}
+        />
         <p className="text-[12px] text-ink-muted">
           本日の新規申請{" "}
           <span className="font-medium tabular-nums text-ink-secondary">
@@ -144,29 +150,6 @@ async function AdminHomeContent({
         <ExpenseDataTable applications={sorted} />
       )}
     </div>
-  );
-}
-
-function TabLink({
-  href,
-  active,
-  children,
-}: {
-  href: string;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "relative -mb-px px-3 py-2 text-[13px] text-ink-secondary transition-colors duration-ui hover:text-ink",
-        active &&
-          "font-semibold text-ink after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-primary",
-      )}
-    >
-      {children}
-    </Link>
   );
 }
 

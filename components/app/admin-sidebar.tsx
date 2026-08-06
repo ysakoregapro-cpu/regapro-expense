@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ClipboardList, Inbox, Menu, X } from "lucide-react";
 
-import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/app/brand-mark";
+import { LogoutButton } from "@/components/app/logout-button";
 import { NotificationSettings } from "@/components/pwa/notification-settings";
-import { Button } from "@/components/ui/button";
 import { roleLabel } from "@/lib/format";
 import type { Profile } from "@/lib/types/database";
 import { cn } from "@/lib/utils";
@@ -16,6 +14,7 @@ import { cn } from "@/lib/utils";
 export function AdminSidebar({ profile }: { profile: Profile }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const viewAll = searchParams.get("view") === "all";
   const onAdminHome = pathname === "/admin";
@@ -35,6 +34,13 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
     },
   ];
 
+  const navigateAdmin = (href: string) => {
+    setOpen(false);
+    router.push(href);
+    // Query-only changes on /admin need an explicit refresh under Cache Components.
+    router.refresh();
+  };
+
   return (
     <>
       <div className="flex h-12 items-center justify-between border-b border-line bg-surface px-4 lg:hidden">
@@ -46,6 +52,7 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
           type="button"
           className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-secondary hover:bg-surface-subtle active:bg-surface-emphasis focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+          aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -54,16 +61,20 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
 
       {open ? (
         <div className="border-b border-line bg-surface px-2 py-2 lg:hidden">
-          <nav className="space-y-1">
+          <nav className="space-y-1" aria-label="管理者メニュー">
             {items.map((item) => (
               <SideLink
                 key={item.href}
                 {...item}
-                onNavigate={() => setOpen(false)}
+                onNavigate={() => navigateAdmin(item.href)}
               />
             ))}
           </nav>
-          <UserBlock profile={profile} className="mt-3 border-t border-line pt-3" />
+          <UserBlock
+            profile={profile}
+            className="mt-3 border-t border-line pt-3"
+            onBeforeLogout={() => setOpen(false)}
+          />
         </div>
       ) : null}
 
@@ -77,22 +88,22 @@ export function AdminSidebar({ profile }: { profile: Profile }) {
             <p className="text-[11px] text-ink-muted">承認管理</p>
           </div>
         </div>
-        <nav className="flex flex-1 flex-col gap-0.5 p-2">
+        <nav className="flex flex-1 flex-col gap-0.5 p-2" aria-label="管理者メニュー">
           {items.map((item) => (
-            <SideLink key={item.href} {...item} />
+            <SideLink
+              key={item.href}
+              {...item}
+              onNavigate={() => navigateAdmin(item.href)}
+            />
           ))}
         </nav>
-        <UserBlock
-          profile={profile}
-          className="border-t border-line p-3"
-        />
+        <UserBlock profile={profile} className="border-t border-line p-3" />
       </aside>
     </>
   );
 }
 
 function SideLink({
-  href,
   label,
   icon: Icon,
   active,
@@ -102,30 +113,33 @@ function SideLink({
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
-  onNavigate?: () => void;
+  onNavigate: () => void;
 }) {
   return (
-    <Link
-      href={href}
+    <button
+      type="button"
       onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
       className={cn(
-        "relative flex h-10 items-center gap-2.5 rounded-md px-3 text-[13px] text-ink-secondary transition-colors duration-ui hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          active &&
-            "bg-primary-soft font-semibold text-ink before:absolute before:left-0 before:top-1.5 before:h-[calc(100%-12px)] before:w-[3px] before:rounded-r before:bg-primary",
+        "relative flex h-10 w-full items-center gap-2.5 rounded-md px-3 text-left text-[13px] text-ink-secondary transition-colors duration-ui hover:bg-surface-subtle hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        active &&
+          "bg-primary-soft font-semibold text-ink before:absolute before:left-0 before:top-1.5 before:h-[calc(100%-12px)] before:w-[3px] before:rounded-r before:bg-primary",
       )}
     >
       <Icon className="h-4 w-4 shrink-0 opacity-80" />
       {label}
-    </Link>
+    </button>
   );
 }
 
 function UserBlock({
   profile,
   className,
+  onBeforeLogout,
 }: {
   profile: Profile;
   className?: string;
+  onBeforeLogout?: () => void;
 }) {
   return (
     <div className={cn("space-y-3", className)}>
@@ -137,11 +151,10 @@ function UserBlock({
           </p>
           <p className="text-[11px] text-ink-muted">{roleLabel(profile.role)}</p>
         </div>
-        <form action={logoutAction}>
-          <Button type="submit" variant="ghost" size="sm" className="shrink-0">
-            ログアウト
-          </Button>
-        </form>
+        <LogoutButton
+          className="shrink-0"
+          onBeforeLogout={onBeforeLogout}
+        />
       </div>
     </div>
   );

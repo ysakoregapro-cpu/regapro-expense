@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { homePathForRole } from "@/lib/auth/session";
+import { getAuthUserId, homePathForRole } from "@/lib/auth/session";
 import { normalizeLoginId } from "@/lib/format";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -11,6 +11,11 @@ import { loginSchema } from "@/lib/validations/expense";
 const GENERIC_LOGIN_ERROR = "ログインIDまたはパスワードが違います。";
 
 export type LoginState = {
+  error?: string;
+};
+
+export type LogoutResult = {
+  ok: boolean;
   error?: string;
 };
 
@@ -100,8 +105,74 @@ export async function loginAction(
   }
 }
 
-export async function logoutAction(): Promise<void> {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+/**
+ * Clears the current-device Auth session (local scope) and auth cookies.
+ * Optionally deactivates this device's push_subscriptions row first.
+ * Does not call PushSubscription.unsubscribe() and does not change
+ * Notification.permission. Other devices' sessions are kept.
+ * Caller must navigate with window.location.replace('/login').
+ */
+export async function logoutAction(input?: {
+  endpoint?: string | null;
+}): Promise<LogoutResult> {
+  try {
+    // 1. Deactivate this device's Web Push row (best-effort; never block logout).
+    const endpoint = input?.endpoint?.trim();
+    if (endpoint && endpoint.startsWith("https://")) {
+      try {
+        const userId = await getAuthUserId();
+        if (userId) {
+          const supabaseForPush = await createClient();
+          const { error: pushError } = await supabaseForPush
+            .from("push_subscriptions")
+            .update({ is_active: false })
+            .eq("user_id", userId)
+            .eq("endpoint", endpoint);
+
+          if (pushError) {
+            console.error("Logout push deactivate failed", {
+              code: pushError.code,
+            });
+          }
+        }
+      } catch {
+        console.error("Logout push deactivate exception");
+      }
+    }
+
+    // 2. Sign out local session only (other devices stay signed in).
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut({ scope: "local" });
+
+    if (error) {
+      console.error("Logout signOut failed", { message: error.message });
+      return { ok: false, error: "ログアウトに失敗しました。" };
+    }
+
+    // 3. Ensure auth cookies are cleared even if signOut partially fails.
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      for (const cookie of cookieStore.getAll()) {
+        if (cookie.name.startsWith("sb-")) {
+          cookieStore.set(cookie.name, "", {
+            path: "/",
+            maxAge: 0,
+          });
+        }
+      }
+    } catch (cookieErr) {
+      console.error("Logout cookie clear failed", {
+        message:
+          cookieErr instanceof Error ? cookieErr.message : "unknown",
+      });
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error("Logout unexpected error", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+    return { ok: false, error: "ログアウトに失敗しました。" };
+  }
 }

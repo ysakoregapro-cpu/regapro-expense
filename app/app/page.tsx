@@ -19,13 +19,16 @@ const statusRank: Record<ExpenseStatus, number> = {
   approved: 2,
 };
 
+const RECENT_LIMIT = 20;
+
 async function ApplicantHomeContent() {
-  await requireApplicant();
+  const profile = await requireApplicant();
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("expense_applications")
     .select("*")
+    .eq("applicant_id", profile.id)
     .order("updated_at", { ascending: false });
 
   if (error) {
@@ -40,6 +43,7 @@ async function ApplicantHomeContent() {
       new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
     );
   });
+  const recent = sorted.slice(0, RECENT_LIMIT);
 
   const returned = applications.filter((a) => a.status === "returned");
   const pending = applications.filter((a) => a.status === "pending").length;
@@ -82,9 +86,19 @@ async function ApplicantHomeContent() {
       <section className="ledger-panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
           <h2 className="text-[13px] font-semibold text-ink">最近の申請</h2>
-          <span className="text-[12px] tabular-nums text-ink-muted">
-            {applications.length}件
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-[12px] tabular-nums text-ink-muted">
+              {applications.length}件
+            </span>
+            {applications.length > RECENT_LIMIT ? (
+              <Link
+                href="/app/applications"
+                className="text-[12px] font-medium text-primary hover:underline"
+              >
+                全申請を見る
+              </Link>
+            ) : null}
+          </div>
         </div>
         <div className="hidden border-b border-line px-3 py-2 text-[11px] font-semibold tracking-wide text-ink-muted lg:grid lg:grid-cols-[84px_40px_minmax(0,1.5fr)_100px_132px_minmax(104px,120px)] lg:gap-3">
           <span>ステータス</span>
@@ -94,7 +108,7 @@ async function ApplicantHomeContent() {
           <span>申請番号</span>
           <span className="text-right">金額</span>
         </div>
-        {sorted.length === 0 ? (
+        {recent.length === 0 ? (
           <EmptyState
             title="申請はまだありません"
             description="経費が発生したら新規申請から登録してください。"
@@ -102,7 +116,7 @@ async function ApplicantHomeContent() {
             actionLabel="新規申請"
           />
         ) : (
-          sorted.map((app) => (
+          recent.map((app) => (
             <ExpenseListRow key={app.id} application={app} />
           ))
         )}

@@ -139,6 +139,32 @@ export async function deactivatePushSubscription(input: {
   return { ok: true };
 }
 
+/** Whether the current user's subscription for this endpoint is active in DB. */
+export async function isOwnPushSubscriptionActive(input: {
+  endpoint: string;
+}): Promise<boolean> {
+  try {
+    const userId = await getAuthUserId();
+    if (!userId) return false;
+
+    const endpoint = input.endpoint?.trim();
+    if (!endpoint || !endpoint.startsWith("https://")) return false;
+
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("push_subscriptions")
+      .select("is_active")
+      .eq("user_id", userId)
+      .eq("endpoint", endpoint)
+      .maybeSingle();
+
+    if (error || !data) return false;
+    return data.is_active === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function getActionBadgeCount(): Promise<number> {
   try {
     const profile = await getCurrentProfile();

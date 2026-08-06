@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import {
   deactivatePushSubscription,
+  isOwnPushSubscriptionActive,
   savePushSubscription,
 } from "@/app/actions/push";
 import { Button } from "@/components/ui/button";
@@ -56,8 +57,11 @@ export function NotificationSettings({ className }: { className?: string }) {
 
       const reg = await navigator.serviceWorker.getRegistration("/");
       const sub = reg ? await reg.pushManager.getSubscription() : null;
-      if (sub) {
-        setState("enabled");
+      if (sub?.endpoint) {
+        const active = await isOwnPushSubscriptionActive({
+          endpoint: sub.endpoint,
+        });
+        setState(active ? "enabled" : "enable");
         return;
       }
 
