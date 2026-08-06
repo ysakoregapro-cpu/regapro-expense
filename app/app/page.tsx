@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/app/empty-state";
 import { ExpenseListRow } from "@/components/app/expense-list-row";
 import { InlineAlert } from "@/components/app/inline-alert";
-import { InlineSummary } from "@/components/app/inline-summary";
 import { LoadingState } from "@/components/app/loading-state";
 import { PageHeader } from "@/components/app/page-header";
+import { StatusSummaryBar } from "@/components/app/status-summary-bar";
 import { Button } from "@/components/ui/button";
 import { requireApplicant } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -45,41 +46,53 @@ async function ApplicantHomeContent() {
   const approved = applications.filter((a) => a.status === "approved").length;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <PageHeader
+        category="経費管理"
         title="経費申請"
+        description="申請の作成と現在の承認状況を確認できます"
         actions={
-          <Button asChild className="h-11 w-full sm:h-10 sm:w-auto">
-            <Link href="/app/new">新規申請</Link>
+          <Button
+            asChild
+            size="lg"
+            className="h-12 w-full rounded-md px-4 md:h-10 md:w-auto md:px-3.5"
+          >
+            <Link href="/app/new">
+              <Plus className="h-4 w-4 opacity-90" />
+              新規申請
+            </Link>
           </Button>
         }
       />
 
-      <InlineSummary
-        items={[
-          { label: "要対応", value: `${returned.length}件` },
-          { label: "確認待ち", value: `${pending}件` },
-          { label: "承認済み", value: `${approved}件` },
-        ]}
+      <StatusSummaryBar
+        returned={returned.length}
+        pending={pending}
+        approved={approved}
       />
 
       {returned.length > 0 ? (
-        <InlineAlert title="差し戻しへの対応が必要です">
+        <InlineAlert title="修正が必要です">
           {returned.length === 1
-            ? `申請 ${returned[0].application_no} が差し戻されています。内容を修正して再申請してください。`
+            ? `申請 ${returned[0].application_no} が差し戻されています。内容を確認して再申請してください。`
             : `${returned.length}件の申請が差し戻されています。一覧から修正してください。`}
         </InlineAlert>
       ) : null}
 
-      <section className="border-y border-line bg-surface">
-        <div className="hidden border-b border-line px-3 py-2 text-xs font-medium text-ink-secondary lg:grid lg:grid-cols-[84px_40px_minmax(0,1.4fr)_minmax(96px,120px)_100px_132px_128px] lg:gap-3">
+      <section className="ledger-panel overflow-hidden">
+        <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+          <h2 className="text-[13px] font-semibold text-ink">最近の申請</h2>
+          <span className="text-[12px] tabular-nums text-ink-muted">
+            {applications.length}件
+          </span>
+        </div>
+        <div className="hidden border-b border-line px-3 py-2 text-[11px] font-semibold tracking-wide text-ink-muted lg:grid lg:grid-cols-[84px_40px_minmax(0,1.5fr)_100px_132px_minmax(104px,120px)] lg:gap-3">
           <span>ステータス</span>
           <span>区分</span>
           <span>経費項目</span>
-          <span className="text-right">金額</span>
           <span>日付</span>
           <span>申請番号</span>
-          <span>更新日時</span>
+          <span className="text-right">金額</span>
         </div>
         {sorted.length === 0 ? (
           <EmptyState
@@ -89,11 +102,9 @@ async function ApplicantHomeContent() {
             actionLabel="新規申請"
           />
         ) : (
-          <div className="px-2 lg:px-3">
-            {sorted.map((app) => (
-              <ExpenseListRow key={app.id} application={app} />
-            ))}
-          </div>
+          sorted.map((app) => (
+            <ExpenseListRow key={app.id} application={app} />
+          ))
         )}
       </section>
     </div>

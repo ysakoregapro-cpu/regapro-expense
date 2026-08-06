@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { ExpenseForm } from "@/components/app/expense-form";
@@ -8,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { ExpenseCategory } from "@/lib/types/database";
 
 async function NewExpenseContent() {
-  await requireApplicant();
+  const profile = await requireApplicant();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("expense_categories")
@@ -22,11 +23,25 @@ async function NewExpenseContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PageHeader title="新規申請" />
-      <div className="mx-auto w-full max-w-[800px] border-y border-line bg-surface px-4 py-5 sm:rounded-lg sm:border sm:px-5">
+      <div>
+        <Link
+          href="/app"
+          className="text-[12px] font-medium text-ink-secondary transition-colors duration-ui hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          ← 申請一覧へ戻る
+        </Link>
+        <PageHeader
+          className="mt-3"
+          category="経費管理"
+          title="新規申請"
+          description="申請内容を入力して送信してください"
+        />
+      </div>
+      <div className="mx-auto w-full max-w-[800px] ledger-panel px-4 py-5 sm:px-6">
         <ExpenseForm
           mode="create"
           categories={(data ?? []) as ExpenseCategory[]}
+          applicantName={profile.display_name}
         />
       </div>
     </div>

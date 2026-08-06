@@ -13,7 +13,7 @@ export function LoginForm() {
   const [state, action] = useActionState(loginAction, initial);
 
   return (
-    <form action={action} className="flex flex-col gap-5">
+    <form action={action} className="flex flex-col gap-4">
       <Field label="ログインID" htmlFor="loginId" required>
         <Input
           id="loginId"
@@ -32,7 +32,11 @@ export function LoginForm() {
         />
       </Field>
       <FieldError message={state.error} />
-      <SubmitButton className="h-11 w-full" pendingLabel="ログイン中…">
+      <SubmitButton
+        className="mt-1 h-11 w-full"
+        size="lg"
+        pendingLabel="ログイン中…"
+      >
         ログイン
       </SubmitButton>
     </form>

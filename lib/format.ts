@@ -25,6 +25,23 @@ export function formatYen(amount: number): string {
   return `${new Intl.NumberFormat("ja-JP").format(amount)}円`;
 }
 
+export function formatYenNumber(amount: number): string {
+  return new Intl.NumberFormat("ja-JP").format(amount);
+}
+
+export function roleLabel(
+  role: "applicant" | "admin" | "system_admin",
+): string {
+  switch (role) {
+    case "applicant":
+      return "申請者";
+    case "admin":
+      return "承認管理者";
+    case "system_admin":
+      return "システム管理者";
+  }
+}
+
 export function formatExpenseDate(date: string): string {
   // date-only values: treat as calendar date in JP display
   const [y, m, d] = date.split("-").map(Number);

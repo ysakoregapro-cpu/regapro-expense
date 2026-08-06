@@ -1,11 +1,11 @@
+import { AmountText } from "@/components/app/amount-text";
+import { StatusBadge } from "@/components/app/status-badge";
 import {
   applicationTypeLabel,
   formatDateTime,
   formatExpenseDate,
-  formatYen,
 } from "@/lib/format";
 import type { ExpenseApplication } from "@/lib/types/database";
-import { StatusBadge } from "@/components/app/status-badge";
 
 export function ApplicationMeta({
   application,
@@ -15,7 +15,7 @@ export function ApplicationMeta({
   showApplicant?: boolean;
 }) {
   return (
-    <dl className="grid gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+    <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
       <MetaItem label="申請番号">
         <span className="app-no break-all">{application.application_no}</span>
       </MetaItem>
@@ -34,9 +34,7 @@ export function ApplicationMeta({
         <span className="break-words">{application.category_name_snapshot}</span>
       </MetaItem>
       <MetaItem label="金額">
-        <span className="amount-cell inline-block whitespace-nowrap font-medium">
-          {formatYen(application.amount)}
-        </span>
+        <AmountText amount={application.amount} strong />
       </MetaItem>
       <MetaItem label="日付">{formatExpenseDate(application.expense_date)}</MetaItem>
       <MetaItem label="バージョン">v{application.version}</MetaItem>
@@ -61,8 +59,10 @@ function MetaItem({
 }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 text-ink">{children}</dd>
+      <dt className="text-[11px] font-medium tracking-wide text-ink-muted">
+        {label}
+      </dt>
+      <dd className="mt-0.5 text-[13px] text-ink">{children}</dd>
     </div>
   );
 }

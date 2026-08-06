@@ -10,13 +10,12 @@ export function StickyActionBar({
   return (
     <div
       className={cn(
-        // Mobile: fixed bottom bar (solid, no glass). Desktop: in-flow sticky panel.
-        "fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 py-3",
-        "lg:static lg:z-20 lg:mt-2 lg:rounded-lg lg:border",
+        "sticky-surface fixed inset-x-0 bottom-0 z-30 px-4 pt-3",
+        "xl:static xl:z-20 xl:mt-1 xl:rounded-lg xl:border xl:border-line xl:pb-3",
         className,
       )}
     >
-      <div className="mx-auto flex max-w-[1280px] flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
+      <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         {children}
       </div>
     </div>

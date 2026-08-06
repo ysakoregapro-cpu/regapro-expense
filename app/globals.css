@@ -4,31 +4,36 @@
 
 @layer base {
   :root {
-    --app-bg: #f6f7f9;
+    --app-bg: #f3f5f7;
     --surface: #ffffff;
-    --surface-subtle: #fafbfc;
-    --text-primary: #17202a;
-    --text-secondary: #667085;
-    --text-muted: #98a2b3;
-    --border: #e4e7ec;
-    --border-strong: #d0d5dd;
-    --primary: #244566;
-    --primary-hover: #1c3855;
+    --surface-subtle: #f8f9fa;
+    --surface-emphasis: #eef2f5;
+    --text-primary: #18232d;
+    --text-secondary: #5f6c78;
+    --text-muted: #8b98a5;
+    --border: #dce2e7;
+    --border-strong: #c9d1d9;
+    --primary: #1e4663;
+    --primary-hover: #17384f;
     --primary-foreground: #ffffff;
+    --primary-soft: #eaf0f4;
+    --craft: #a77d45;
+    --craft-soft: #f5efe6;
     --focus-ring: #4b7398;
-    --status-approved-text: #256044;
-    --status-approved-bg: #eaf5ef;
-    --status-pending-text: #805600;
-    --status-pending-bg: #fff7df;
-    --status-returned-text: #9a3412;
-    --status-returned-bg: #fff0e7;
+    --status-pending-text: #765710;
+    --status-pending-bg: #fcf5dd;
+    --status-approved-text: #286047;
+    --status-approved-bg: #e8f3ed;
+    --status-returned-text: #98411f;
+    --status-returned-bg: #faede6;
     --destructive-text: #b42318;
-    --destructive-bg: #feeceb;
+    --destructive-bg: #fdecea;
     --radius-control: 6px;
     --radius-panel: 8px;
     --radius-dialog: 10px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
 
-    /* shadcn bridge */
     --background: var(--app-bg);
     --foreground: var(--text-primary);
     --card: var(--surface);
@@ -39,7 +44,7 @@
     --secondary-foreground: var(--text-primary);
     --muted: var(--surface-subtle);
     --muted-foreground: var(--text-secondary);
-    --accent: var(--surface-subtle);
+    --accent: var(--primary-soft);
     --accent-foreground: var(--text-primary);
     --destructive: var(--destructive-text);
     --destructive-foreground: #ffffff;
@@ -52,10 +57,56 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     background: var(--app-bg);
     color: var(--text-primary);
     font-feature-settings: "palt";
+  }
+
+  ::selection {
+    background: var(--primary-soft);
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  /* Craft accent — only for brand/category/critical cues, not every heading */
+  .craft-mark {
+    @apply relative pl-2.5;
+  }
+
+  .craft-mark::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    bottom: 0.15em;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--craft);
+  }
+
+  .ledger-panel {
+    @apply border-y border-line bg-surface sm:rounded-lg sm:border;
+  }
+
+  /* 16px on mobile prevents iOS input zoom; slightly denser from md */
+  .control-base {
+    @apply flex h-12 w-full rounded-md border border-line bg-surface px-3 text-base text-ink transition-[border-color,background-color,box-shadow] duration-150 md:h-11 md:text-sm;
+    @apply hover:border-line-strong;
+    @apply focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+    @apply active:border-line-strong;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .sticky-surface {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding-bottom: max(12px, var(--safe-bottom));
   }
 }
 
@@ -68,6 +119,22 @@
   .app-no {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .yen-unit {
+    margin-left: 0.1em;
+    font-size: 0.85em;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+
+  .pb-sticky-safe {
+    padding-bottom: calc(5.5rem + var(--safe-bottom));
+  }
+
+  .pb-form-sticky {
+    padding-bottom: calc(6.5rem + var(--safe-bottom));
   }
 }

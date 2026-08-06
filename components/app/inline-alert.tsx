@@ -13,10 +13,10 @@ export function InlineAlert({
 }) {
   const toneClass =
     tone === "returned"
-      ? "border-l-[3px] border-l-status-returned-fg bg-status-returned/40"
+      ? "border-l-[3px] border-l-status-returned-fg bg-status-returned/45"
       : tone === "error"
         ? "border-l-[3px] border-l-destructive bg-destructive-soft"
-        : "border-l-[3px] border-l-primary bg-surface-subtle";
+        : "border-l-[3px] border-l-craft bg-craft-soft";
 
   return (
     <div
@@ -27,7 +27,9 @@ export function InlineAlert({
       )}
       role="status"
     >
-      {title ? <p className="mb-0.5 text-[13px] font-medium">{title}</p> : null}
+      {title ? (
+        <p className="mb-0.5 text-[13px] font-semibold">{title}</p>
+      ) : null}
       <div className="break-words text-[13px] leading-relaxed text-ink-secondary whitespace-pre-wrap">
         {children}
       </div>

@@ -17,6 +17,7 @@ export default {
         surface: {
           DEFAULT: "var(--surface)",
           subtle: "var(--surface-subtle)",
+          emphasis: "var(--surface-emphasis)",
         },
         ink: {
           DEFAULT: "var(--text-primary)",
@@ -26,6 +27,10 @@ export default {
         line: {
           DEFAULT: "var(--border)",
           strong: "var(--border-strong)",
+        },
+        craft: {
+          DEFAULT: "var(--craft)",
+          soft: "var(--craft-soft)",
         },
         card: {
           DEFAULT: "var(--card)",
@@ -39,6 +44,7 @@ export default {
           DEFAULT: "var(--primary)",
           hover: "var(--primary-hover)",
           foreground: "var(--primary-foreground)",
+          soft: "var(--primary-soft)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
@@ -92,7 +98,10 @@ export default {
         ],
       },
       boxShadow: {
-        float: "0 4px 16px rgba(23, 32, 42, 0.08)",
+        float: "0 8px 24px rgba(24, 35, 45, 0.1)",
+      },
+      transitionDuration: {
+        ui: "150ms",
       },
     },
   },

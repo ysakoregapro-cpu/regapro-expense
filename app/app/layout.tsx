@@ -11,7 +11,7 @@ async function ApplicantFrame({ children }: { children: React.ReactNode }) {
   return (
     <AppShell>
       <ApplicantHeader profile={profile} />
-      <main className="mx-auto w-full max-w-[1080px] px-4 py-5">{children}</main>
+      <main className="mx-auto w-full max-w-[1080px] px-4 py-4 md:px-6 md:py-5">{children}</main>
     </AppShell>
   );
 }

@@ -13,11 +13,11 @@ async function AdminFrame({ children }: { children: React.ReactNode }) {
     <AppShell>
       <div className="flex min-h-svh flex-col lg:flex-row">
         <Suspense fallback={<LoadingState className="p-4" />}>
-          <AdminSidebar />
+          <AdminSidebar profile={profile} />
         </Suspense>
         <div className="flex min-w-0 flex-1 flex-col">
           <AdminHeader profile={profile} />
-          <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-5 lg:px-5">
+          <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 py-4 md:px-6 md:py-5 lg:px-5">
             {children}
           </main>
         </div>

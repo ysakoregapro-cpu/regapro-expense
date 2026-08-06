@@ -2,13 +2,14 @@ import { Suspense } from "react";
 
 import { EmptyState } from "@/components/app/empty-state";
 import { ExpenseDataTable } from "@/components/app/expense-data-table";
-import { InlineSummary } from "@/components/app/inline-summary";
 import { LoadingState } from "@/components/app/loading-state";
+import { OpsSummaryBar } from "@/components/app/ops-summary-bar";
 import { PageHeader } from "@/components/app/page-header";
 import { requireAdmin } from "@/lib/auth/session";
-import { formatYen } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { ExpenseApplication, ExpenseStatus } from "@/lib/types/database";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const statusRank: Record<ExpenseStatus, number> = {
   pending: 0,
@@ -91,20 +92,48 @@ async function AdminHomeContent({
     .reduce((sum, a) => sum + a.amount, 0);
 
   return (
-    <div className="flex flex-col gap-4">
-      <PageHeader title={viewAll ? "全申請" : "未確認申請"} />
-
-      <InlineSummary
-        items={[
-          { label: "未確認", value: `${pendingList.length}件` },
-          { label: "本日の新規", value: `${todayNew}件` },
-          { label: "再申請", value: `${resubmitPending}件` },
-          { label: "今月承認額", value: formatYen(monthApprovedAmount) },
-        ]}
+    <div className="flex flex-col gap-5">
+      <PageHeader
+        category="運用"
+        title="承認管理"
+        description={
+          viewAll
+            ? "すべての申請を確認できます"
+            : "未確認の申請を優先して処理できます"
+        }
       />
 
+      <OpsSummaryBar
+        pending={pendingList.length}
+        resubmit={resubmitPending}
+        monthApprovedAmount={monthApprovedAmount}
+      />
+
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex items-center gap-1 border-b border-line">
+          <TabLink href="/admin" active={!viewAll}>
+            未確認
+            <span className="ml-1.5 tabular-nums text-ink-muted">
+              {pendingList.length}
+            </span>
+          </TabLink>
+          <TabLink href="/admin?view=all" active={viewAll}>
+            すべて
+            <span className="ml-1.5 tabular-nums text-ink-muted">
+              {all.length}
+            </span>
+          </TabLink>
+        </div>
+        <p className="text-[12px] text-ink-muted">
+          本日の新規申請{" "}
+          <span className="font-medium tabular-nums text-ink-secondary">
+            {todayNew}件
+          </span>
+        </p>
+      </div>
+
       {sorted.length === 0 ? (
-        <div className="border-y border-line bg-surface">
+        <div className="ledger-panel">
           <EmptyState
             title={
               viewAll ? "申請はまだありません" : "未確認の申請はありません"
@@ -115,6 +144,29 @@ async function AdminHomeContent({
         <ExpenseDataTable applications={sorted} />
       )}
     </div>
+  );
+}
+
+function TabLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "relative -mb-px px-3 py-2 text-[13px] text-ink-secondary transition-colors duration-ui hover:text-ink",
+        active &&
+          "font-semibold text-ink after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-primary",
+      )}
+    >
+      {children}
+    </Link>
   );
 }
 
